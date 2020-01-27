@@ -66,24 +66,24 @@ class NewsFeedViewController: UIViewController, NewsFeedDisplayLogic {
 
 extension NewsFeedViewController: UITableViewDelegate, UITableViewDataSource {
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard segue.identifier == "showPhotos", let photosVC = segue.destination as? NewsPhotosViewController else { return }
-        
-        if let indexPath = (sender as? IndexPath) {
-            let cellViewModel = feedViewModel.cells[indexPath.row]
-            let photoAttachment = cellViewModel.photoAttachment
-            if photoAttachment?.photoUrlString != nil {
-                photosVC.load(from: photoAttachment?.photoUrlString)
-            } else {
-                return }
-            
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        table.deselectRow(at: indexPath, animated: true)
-        performSegue(withIdentifier: "showPhotos", sender: indexPath)
-    }
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        guard segue.identifier == "showPhotos", let photosVC = segue.destination as? NewsPhotosViewController else { return }
+//        
+//        if let indexPath = (sender as? IndexPath) {
+//            let cellViewModel = feedViewModel.cells[indexPath.row]
+//            let photoAttachment = cellViewModel.photoAttachment
+//            if photoAttachment?.photoUrlString != nil {
+//                photosVC.load(from: photoAttachment?.photoUrlString)
+//            } else {
+//                return }
+//            
+//        }
+//    }
+//    
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        table.deselectRow(at: indexPath, animated: true)
+//        performSegue(withIdentifier: "showPhotos", sender: indexPath)
+//    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return feedViewModel.cells.count

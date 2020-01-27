@@ -18,7 +18,7 @@ protocol FeedCellViewModel {
     var comments: String? { get }
     var shares: String? { get }
     var views: String? { get }
-    var photoAttachment: FeedCellPhotoAttachmentViewModel? { get }
+    var photoAttachments: [FeedCellPhotoAttachmentViewModel] { get }
     var sizes: FeedCellSizes { get }
 }
 
@@ -38,6 +38,8 @@ protocol FeedCellPhotoAttachmentViewModel {
 class NewsFeedCell: UITableViewCell {
     
     static let reuseId = "NewsFeedCell"
+    
+    let galleryCollectionView = GalleryCollectionView()
     
     @IBOutlet weak var iconImageView: WebImageView!
     @IBOutlet weak var nameLabel: UILabel!
@@ -62,6 +64,8 @@ class NewsFeedCell: UITableViewCell {
         iconImageView.layer.cornerRadius = iconImageView.frame.width / 2
         iconImageView.clipsToBounds = true
         
+        cardView.addSubview(galleryCollectionView)
+        
         cardView.layer.cornerRadius = 10
         cardView.clipsToBounds = true
         
@@ -83,11 +87,20 @@ class NewsFeedCell: UITableViewCell {
         postImageView.frame = viewModel.sizes.attachmentFrame
         bottomView.frame = viewModel.sizes.bottomViewFrame
         
-        if let photoAttachment = viewModel.photoAttachment {
-            postImageView.set(imageUrl: photoAttachment.photoUrlString)
+        if let photoAttachment = viewModel.photoAttachments.first, viewModel.photoAttachments.count == 1 {
             postImageView.isHidden = false
-        } else {
+            galleryCollectionView.isHidden = true
+            postImageView.set(imageUrl: photoAttachment.photoUrlString)
+            postImageView.frame = viewModel.sizes.attachmentFrame
+        } else if viewModel.photoAttachments.count > 1 {
             postImageView.isHidden = true
+            galleryCollectionView.isHidden = false
+            galleryCollectionView.frame = viewModel.sizes.attachmentFrame
+            galleryCollectionView.set(photos: viewModel.photoAttachments)
+        }
+        else {
+            postImageView.isHidden = true
+            galleryCollectionView.isHidden = true
         }
         
     }
