@@ -19,7 +19,6 @@ enum NewsFeed {
     struct Response {
       enum ResponseType {
         case presentNewsFeed(feed: FeedResponse)
-        case presentName(name: String)
       }
     }
     struct ViewModel {

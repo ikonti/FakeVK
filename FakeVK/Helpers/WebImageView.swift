@@ -15,8 +15,19 @@ class WebImageView: UIImageView {
             self.image = nil
             return }
         
+        let activityIndicatorView = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 12, height: 12))
+        activityIndicatorView.isHidden = false
+        activityIndicatorView.center = center
+        
+        addSubview(activityIndicatorView)
+        bringSubviewToFront(activityIndicatorView)
+        activityIndicatorView.startAnimating()
+        
         if let cachedResponse = URLCache.shared.cachedResponse(for: URLRequest(url: url)) {
             self.image = UIImage(data: cachedResponse.data)
+            activityIndicatorView.isHidden = true
+            activityIndicatorView.stopAnimating()
+            activityIndicatorView.removeFromSuperview()
             return
         }
         
@@ -25,6 +36,9 @@ class WebImageView: UIImageView {
                 if let data = data, let response = response {
                     self?.image = UIImage(data: data)
                     self?.handleLoadedImage(data: data, response: response)
+                    activityIndicatorView.isHidden = true
+                    activityIndicatorView.stopAnimating()
+                    activityIndicatorView.removeFromSuperview()
                 }
             }
         }

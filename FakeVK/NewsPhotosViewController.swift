@@ -8,21 +8,45 @@
 
 import UIKit
 
-class NewsPhotosViewController: UIViewController {
+class NewsPhotosViewController: UIViewController, UIScrollViewDelegate, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     @IBOutlet weak var postImageView: WebImageView!
+    @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var photosCollectionView: UICollectionView!
     
-    var url: String?
+    var photos = [FeedCellPhotoAttachmentViewModel]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        guard let url = url else { return }
-        postImageView.set(imageUrl: url)
+        scrollView.minimumZoomScale = 1
+        scrollView.maximumZoomScale = 1.1
+        scrollView.bounces = true
+        scrollView.delegate = self
+
     }
     
-    func load(from imageUrl: String?) {
-        url = imageUrl
+    func set(viewModel: FeedCellViewModel) {
+        self.photos = viewModel.photoAttachments
     }
+    
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+//        postImageView.contentMode = .scaleAspectFill
+        return photosCollectionView
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+           return photos.count
+       }
+       
+       func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = photosCollectionView.dequeueReusableCell(withReuseIdentifier: "NewsPhotosCell", for: indexPath) as! NewsCollectionViewCell
+           cell.set(imageUrl: photos[indexPath.row].photoUrlString)
+           return cell
+       }
+       
+       func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: photosCollectionView.frame.width, height: photosCollectionView.frame.height)
+       }
 
 }

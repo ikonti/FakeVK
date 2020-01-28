@@ -35,11 +35,20 @@ protocol FeedCellPhotoAttachmentViewModel {
     var height: Int { get }
 }
 
+protocol NewsFeedCellDelegate: class {
+    func didElementClick(_ valueToPush: [FeedCellPhotoAttachmentViewModel], row: Int)
+}
+
 class NewsFeedCell: UITableViewCell {
     
     static let reuseId = "NewsFeedCell"
     
+    weak var delegate: NewsFeedCellDelegate?
+    
     let galleryCollectionView = GalleryCollectionView()
+    
+    var photos = [FeedCellPhotoAttachmentViewModel]()
+    var row: Int?
     
     @IBOutlet weak var iconImageView: WebImageView!
     @IBOutlet weak var nameLabel: UILabel!
@@ -66,6 +75,8 @@ class NewsFeedCell: UITableViewCell {
         
         cardView.addSubview(galleryCollectionView)
         
+        postImageViewPressed()
+        
         cardView.layer.cornerRadius = 10
         cardView.clipsToBounds = true
         
@@ -73,7 +84,8 @@ class NewsFeedCell: UITableViewCell {
         selectionStyle = .none
     }
     
-    func set(viewModel: FeedCellViewModel) {
+    func set(viewModel: FeedCellViewModel, row: Int) {
+        print(row)
         iconImageView.set(imageUrl: viewModel.iconUrlString)
         nameLabel.text = viewModel.name
         dateLabel.text = viewModel.date
@@ -88,15 +100,25 @@ class NewsFeedCell: UITableViewCell {
         bottomView.frame = viewModel.sizes.bottomViewFrame
         
         if let photoAttachment = viewModel.photoAttachments.first, viewModel.photoAttachments.count == 1 {
-            postImageView.isHidden = false
-            galleryCollectionView.isHidden = true
-            postImageView.set(imageUrl: photoAttachment.photoUrlString)
-            postImageView.frame = viewModel.sizes.attachmentFrame
-        } else if viewModel.photoAttachments.count > 1 {
+//            postImageView.isHidden = false
+//            galleryCollectionView.isHidden = true
+//            postImageView.set(imageUrl: photoAttachment.photoUrlString)
+//            postImageView.frame = viewModel.sizes.attachmentFrame
+//            test = photoAttachment.photoUrlString
+            
             postImageView.isHidden = true
             galleryCollectionView.isHidden = false
             galleryCollectionView.frame = viewModel.sizes.attachmentFrame
             galleryCollectionView.set(photos: viewModel.photoAttachments)
+            photos = viewModel.photoAttachments
+            self.row = row
+        } else if let photoAttachment = viewModel.photoAttachments.first, viewModel.photoAttachments.count > 1 {
+            postImageView.isHidden = true
+            galleryCollectionView.isHidden = false
+            galleryCollectionView.frame = viewModel.sizes.attachmentFrame
+            galleryCollectionView.set(photos: viewModel.photoAttachments)
+            photos = viewModel.photoAttachments
+            self.row = row
         }
         else {
             postImageView.isHidden = true
@@ -104,4 +126,16 @@ class NewsFeedCell: UITableViewCell {
         }
         
     }
+    
+    func postImageViewPressed() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(pressed))
+        galleryCollectionView.addGestureRecognizer(tapGesture)
+        tapGesture.delegate = self
+    }
+    
+    @objc func pressed(sender: UITapGestureRecognizer) {
+        guard let row = row else { return }
+        delegate?.didElementClick(photos, row: row)
+    }
+    
 }

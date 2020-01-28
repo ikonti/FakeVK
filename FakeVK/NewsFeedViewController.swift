@@ -21,6 +21,9 @@ class NewsFeedViewController: UIViewController, NewsFeedDisplayLogic {
     
     private var feedViewModel = FeedViewModel.init(cells: [])
     
+    var photos = [FeedCellPhotoAttachmentViewModel]()
+    var row: Int?
+    
   // MARK: Setup
   
   private func setup() {
@@ -33,25 +36,11 @@ class NewsFeedViewController: UIViewController, NewsFeedDisplayLogic {
     interactor.presenter      = presenter
     presenter.viewController  = viewController
     router.viewController     = viewController
-    router.dataStore = interactor
+    
   }
   
   // MARK: Routing
   
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        if let scene = segue.identifier {
-        let selector = NSSelectorFromString("routeTo\(scene)WithSegue:")
-        if let router = router, router.responds(to: selector) {
-          router.perform(selector, with: segue)
-        }
-      }
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        table.deselectRow(at: indexPath, animated: true)
-        performSegue(withIdentifier: "showPhotos", sender: indexPath)
-    }
 
   
   // MARK: View lifecycle
@@ -81,20 +70,27 @@ class NewsFeedViewController: UIViewController, NewsFeedDisplayLogic {
 
 extension NewsFeedViewController: UITableViewDelegate, UITableViewDataSource {
     
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        guard segue.identifier == "showPhotos", let photosVC = segue.destination as? NewsPhotosViewController else { return }
-//        
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard segue.identifier == "showPhotos", let row = row, let photosVC = segue.destination as? NewsPhotosViewController else { return }
+        
+//        photosVC.set(photos: photos)
+        let cellViewModel = feedViewModel.cells[row]
+        photosVC.set(viewModel: cellViewModel)
+        print("jjj")
 //        if let indexPath = (sender as? IndexPath) {
+////            let imageUrl = photos[indexPath.row]
 //            let cellViewModel = feedViewModel.cells[indexPath.row]
-//            let photoAttachment = cellViewModel.photoAttachment
-//            if photoAttachment?.photoUrlString != nil {
-//                photosVC.load(from: photoAttachment?.photoUrlString)
-//            } else {
-//                return }
-//            
+//            photosVC.set(viewModel: cellViewModel)
+//            print("bbb")
 //        }
-//    }
-//
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        print("aaa")
+        performSegue(withIdentifier: "showPhotos", sender: indexPath)
+    }
+
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return feedViewModel.cells.count
@@ -103,7 +99,8 @@ extension NewsFeedViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: NewsFeedCell.reuseId, for: indexPath) as! NewsFeedCell
         let cellViewModel = feedViewModel.cells[indexPath.row]
-        cell.set(viewModel: cellViewModel)
+        cell.set(viewModel: cellViewModel, row: indexPath.row)
+        cell.delegate = self
         return cell
     }
     
@@ -112,4 +109,12 @@ extension NewsFeedViewController: UITableViewDelegate, UITableViewDataSource {
         return cellViewModel.sizes.totalHeight
     }
     
+}
+
+extension NewsFeedViewController: NewsFeedCellDelegate {
+    func didElementClick(_ valueToPush: [FeedCellPhotoAttachmentViewModel], row: Int) {
+        photos = valueToPush
+        self.row = row
+        performSegue(withIdentifier: "showPhotos", sender: row)
+    }  
 }
