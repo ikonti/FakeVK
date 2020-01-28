@@ -33,10 +33,25 @@ class NewsFeedViewController: UIViewController, NewsFeedDisplayLogic {
     interactor.presenter      = presenter
     presenter.viewController  = viewController
     router.viewController     = viewController
+    router.dataStore = interactor
   }
   
   // MARK: Routing
   
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        if let scene = segue.identifier {
+        let selector = NSSelectorFromString("routeTo\(scene)WithSegue:")
+        if let router = router, router.responds(to: selector) {
+          router.perform(selector, with: segue)
+        }
+      }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        table.deselectRow(at: indexPath, animated: true)
+        performSegue(withIdentifier: "showPhotos", sender: indexPath)
+    }
 
   
   // MARK: View lifecycle
@@ -79,11 +94,7 @@ extension NewsFeedViewController: UITableViewDelegate, UITableViewDataSource {
 //            
 //        }
 //    }
-//    
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        table.deselectRow(at: indexPath, animated: true)
-//        performSegue(withIdentifier: "showPhotos", sender: indexPath)
-//    }
+//
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return feedViewModel.cells.count

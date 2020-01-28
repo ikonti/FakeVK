@@ -12,10 +12,16 @@ protocol NewsFeedBusinessLogic {
   func makeRequest(request: NewsFeed.Model.Request.RequestType)
 }
 
-class NewsFeedInteractor: NewsFeedBusinessLogic {
+protocol NewsFeedDataStore
+{
+  var name: String { get set }
+}
+
+class NewsFeedInteractor: NewsFeedBusinessLogic, NewsFeedDataStore {
 
   var presenter: NewsFeedPresentationLogic?
   var service: NewsFeedService?
+    var name: String = "Teeest"
     
     private var fetcher: DataFetcher = NetworkDataFetcher(networking: NetworkService())
   
@@ -24,6 +30,7 @@ class NewsFeedInteractor: NewsFeedBusinessLogic {
       service = NewsFeedService()
     }
     
+    print(name)
     switch request {
     
     case .getNewsFeed:
