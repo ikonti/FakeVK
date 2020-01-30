@@ -43,6 +43,8 @@ class NewsFeedPresenter: NewsFeedPresentationLogic {
         
         let photoAttachments = self.photoAttachments(feedItem: feedItem)
         
+        let geo = self.getGeos(feedItem: feedItem)
+        
         let date = Date(timeIntervalSince1970: feedItem.date)
         let dateTitle = dateFormatter.string(from: date)
         
@@ -57,7 +59,7 @@ class NewsFeedPresenter: NewsFeedPresentationLogic {
                                        shares: String(feedItem.reposts?.count ?? 0),
                                        views: String(feedItem.views?.count ?? 0),
                                        photoAttachments: photoAttachments,
-                                       sizes: sizes)
+                                       sizes: sizes, geo: geo)
         
     }
     
@@ -80,5 +82,15 @@ class NewsFeedPresenter: NewsFeedPresentationLogic {
                                                               width: photo.width,
                                                               height: photo.height)
         })
+    }
+    
+    private func getGeos(feedItem: FeedItem) -> [FeedViewModel.FeedCellGeo] {
+        guard let geos = feedItem.geo else { return [] }
+        
+        return geos.compactMap({ (geo) -> FeedViewModel.FeedCellGeo? in
+            guard let showmap = geo.showmap else { return nil }
+            return FeedViewModel.FeedCellGeo.init(showmap: showmap)
+        })
+
     }
 }

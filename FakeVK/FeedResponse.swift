@@ -28,6 +28,11 @@ struct FeedItem: Decodable {
     let reposts: CountableItem?
     let views: CountableItem?
     let attachments: [Attachment]?
+    let geo: [Geo]?
+}
+
+struct Geo: Decodable {
+    let showmap: String?
 }
 
 struct Attachment: Decodable {

@@ -40,6 +40,11 @@ struct FeedViewModel {
         var views: String?
         var photoAttachments: [FeedCellPhotoAttachmentViewModel]
         var sizes: FeedCellSizes
+        var geo: [FeedCellGeoViewModel]
+    }
+    
+    struct FeedCellGeo: FeedCellGeoViewModel {
+        var showmap: String?
     }
     
     struct FeedCellPhotoAttachment: FeedCellPhotoAttachmentViewModel {
