@@ -12,16 +12,19 @@ import UIKit
 class PhotosCollectionView: UICollectionView, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     var photos = [FeedCellPhotoAttachmentViewModel]()
+    var numbers: Int?
     
     init() {
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
+        layout.scrollDirection = .horizontal
         super.init(frame: .zero, collectionViewLayout: layout)
+        
+        isPagingEnabled = true
         
         delegate = self
         dataSource = self
         
-        backgroundColor = #colorLiteral(red: 0.921431005, green: 0.9214526415, blue: 0.9214410186, alpha: 1)
+        backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
         
         register(PhotosCollectionViewCell.self, forCellWithReuseIdentifier: PhotosCollectionViewCell.reuseId)
     }
@@ -38,6 +41,8 @@ class PhotosCollectionView: UICollectionView, UICollectionViewDelegate, UICollec
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = dequeueReusableCell(withReuseIdentifier: PhotosCollectionViewCell.reuseId, for: indexPath) as! PhotosCollectionViewCell
         cell.set(imageUrl: photos[indexPath.row].photoUrlString)
+        numbers = indexPath.row + 1
+        NotificationCenter.default.post(name: NSNotification.Name("change"), object: nil)
         return cell
     }
     

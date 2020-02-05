@@ -74,6 +74,7 @@ extension NewsFeedViewController: UITableViewDelegate, UITableViewDataSource {
         
         let cellViewModel = feedViewModel.cells[row]
         photosVC.set(viewModel: cellViewModel)
+        title = ""
 
     }
     

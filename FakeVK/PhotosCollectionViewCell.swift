@@ -30,12 +30,18 @@ class PhotosCollectionViewCell: UICollectionViewCell {
         myImageView.addGestureRecognizer(tap)
         myImageView.isUserInteractionEnabled = true
         
-        myImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageViewTapped)))
+        myImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hide)))
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(shareTapped), name: NSNotification.Name("shareTapped"), object: nil)
     }
     
     required init?(coder aDecoder: NSCoder) {
            fatalError("init(coder:) has not been implemented")
        }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
     override func prepareForReuse() {
         myImageView.image = nil
@@ -45,7 +51,11 @@ class PhotosCollectionViewCell: UICollectionViewCell {
         myImageView.set(imageUrl: imageUrl)
     }
     
-    @objc func imageViewTapped() {
+    @objc func hide() {
+        NotificationCenter.default.post(name: NSNotification.Name("hide"), object: nil)
+    }
+    
+    @objc func shareTapped() {
         myImageView.image?.share()
     }
     
